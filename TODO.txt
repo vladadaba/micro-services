@@ -1,0 +1,7 @@
+- Add 2 microservices
+	- web api
+	- worker service
+- Add Swagger
+- Dockerize
+- Add Kafka
+- Add EF Core

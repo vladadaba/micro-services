@@ -6,12 +6,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Npgsql;
+using Polly;
 using WebAPI.Messaging;
+using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI
 {
@@ -40,7 +45,9 @@ namespace WebAPI
                 });
             });
 
+            services.AddDbContext<JobContext>(x => x.UseNpgsql("Server=db;Port=5432;Database=Jobs;Username=postgres;Password=password;"));
             services.AddSingleton<MessageProducer>();
+            services.AddScoped<JobService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,6 +79,27 @@ namespace WebAPI
             {
                 endpoints.MapControllers();
             });
+
+            UpdateDatabase(app);
+        }
+
+        private static void UpdateDatabase(IApplicationBuilder app)
+        {
+            // workaround for postgres container not accepting connections on startup
+            // retry until it accepts connection
+            var retryPolicy = Policy
+                .Handle<NpgsqlException>()
+                .WaitAndRetry(12, retryAttempt => TimeSpan.FromSeconds(5));
+
+            using (var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<JobContext>())
+                {
+                    retryPolicy.Execute(context.Database.Migrate);
+                }
+            }
         }
     }
 }

@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5001:80"
+    depends_on:
+      - db
 
   worker:
     build:
@@ -15,6 +17,17 @@ services:
       - "5002:80"
     depends_on:
       - kafka
+
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: Jobs
+    volumes:
+      - ./data/jobs_db:/var/lib/postgresql/data
 
   zookeeper:
     container_name: zookeeper

@@ -12,7 +12,11 @@ namespace WebAPI.Messaging
 
         public MessageProducer()
         {
-            var config = new ProducerConfig { BootstrapServers = "kafka:9092" };
+            var config = new ProducerConfig
+            {
+                BootstrapServers = "kafka:9092",
+                Acks = Acks.All
+            };
 
             // If serializers are not specified, default serializers from
             // `Confluent.Kafka.Serializers` will be automatically used where

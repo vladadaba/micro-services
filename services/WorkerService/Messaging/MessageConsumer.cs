@@ -58,6 +58,10 @@ namespace WorkerService.Messaging
                 Console.WriteLine("Consumer cancelled...");
                 consumer.Close();
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("UNEXPECTED EXCEPTIONS: " + ex.Message);
+            }
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

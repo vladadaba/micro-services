@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using WebAPI.Messaging;
 using WebAPI.Models;
 
 namespace WebAPI.Services
@@ -11,12 +10,10 @@ namespace WebAPI.Services
     public class JobService
     {
         private readonly JobContext _jobContext;
-        private readonly MessageProducer _producer;
 
-        public JobService(JobContext jobContext, MessageProducer producer)
+        public JobService(JobContext jobContext)
         {
             _jobContext = jobContext;
-            _producer = producer;
         }
 
         public async Task CreateJob(JobItem newJob)
@@ -24,10 +21,10 @@ namespace WebAPI.Services
             await using var transaction = await _jobContext.Database.BeginTransactionAsync();
             try
             {
-                _jobContext.Add(newJob);
-                _producer.SendMessage(newJob.Name);
+                _jobContext.JobItems.Add(newJob);
+                _jobContext.OutboxItems.Add(OutboxItem.FromJob(newJob));
+                
                 await _jobContext.SaveChangesAsync();
-
                 await transaction.CommitAsync();
             }
             catch (Exception ex)

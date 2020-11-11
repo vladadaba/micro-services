@@ -3,15 +3,24 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Npgsql;
+using WebAPI.Options;
 
 namespace WebAPI.Database
 {
     public class ConnectionFactory
     {
+        private readonly IOptions<DatabaseOptions> _options;
+
+        public ConnectionFactory(IOptions<DatabaseOptions> options)
+        {
+            _options = options;
+        }
+
         public IDbConnection GetConnection()
         {
-            return new NpgsqlConnection("Server=db;Port=5432;Database=Jobs;Username=postgres;Password=password;");
+            return new NpgsqlConnection(_options.Value.ConnectionString);
         }
     }
 }

@@ -14,6 +14,7 @@ using Npgsql;
 using Polly;
 using WebAPI.Database;
 using WebAPI.Models;
+using WebAPI.Options;
 
 namespace WebAPI
 {
@@ -29,6 +30,7 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<DatabaseOptions>(Configuration.GetSection("Database"));
             services.AddControllers();
             
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -43,7 +45,7 @@ namespace WebAPI
             });
 
             services.AddMediatR(typeof(Startup));
-            services.AddDbContext<JobContext>(x => x.UseNpgsql("Server=db;Port=5432;Database=Jobs;Username=postgres;Password=password;"));
+            services.AddDbContext<JobContext>(x => x.UseNpgsql(Configuration["Database:ConnectionString"]));
             services.AddSingleton<ConnectionFactory>();
         }
 

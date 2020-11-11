@@ -4,6 +4,8 @@ services:
     build:
       context: ../services/WebAPI
       dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
     ports:
       - "5001:80"
     depends_on:
@@ -13,6 +15,8 @@ services:
     build:
       context: ../services/WorkerService
       dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
     ports:
       - "5002:80"
     depends_on:

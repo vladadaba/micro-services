@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WorkerService.Messaging;
+using WorkerService.Options;
 
 namespace WorkerService
 {
@@ -26,6 +27,7 @@ namespace WorkerService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<KafkaOptions>(Configuration.GetSection("Kafka"));
             services.AddControllers();
             services.AddHostedService<MessageConsumer>();
         }

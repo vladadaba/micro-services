@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using Polly;
-using WebAPI.Messaging;
 using WebAPI.Models;
 using WebAPI.Services;
 
@@ -46,7 +45,6 @@ namespace WebAPI
             });
 
             services.AddDbContext<JobContext>(x => x.UseNpgsql("Server=db;Port=5432;Database=Jobs;Username=postgres;Password=password;"));
-            services.AddSingleton<MessageProducer>();
             services.AddScoped<JobService>();
         }
 

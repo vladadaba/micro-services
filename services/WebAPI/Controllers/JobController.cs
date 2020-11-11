@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebAPI.DTO;
-using WebAPI.Messaging;
 using WebAPI.Models;
 using WebAPI.Services;
 

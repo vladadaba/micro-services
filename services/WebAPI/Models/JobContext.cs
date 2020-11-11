@@ -13,6 +13,7 @@ namespace WebAPI.Models
         }
 
         public DbSet<JobItem> JobItems { get; set; }
+        public DbSet<OutboxItem> OutboxItems { get; set; }
 
     }
 }

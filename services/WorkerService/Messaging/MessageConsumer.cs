@@ -32,7 +32,7 @@ namespace WorkerService.Messaging
 
         private void Subscribe()
         {
-            consumer.Subscribe("test-topic");
+            consumer.Subscribe("jobs.public.OutboxItems");
         }
 
         private void StartConsuming(CancellationToken token)

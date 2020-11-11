@@ -19,7 +19,7 @@ services:
       - kafka
 
   db:
-    image: postgres:latest
+    image: debezium/postgres
     ports:
       - "5432:5432"
     environment:
@@ -27,19 +27,23 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: Jobs
     volumes:
-      - ./data/jobs_db:/var/lib/postgresql/data
+      - ./data/db:/var/lib/postgresql/data
 
   zookeeper:
-    container_name: zookeeper
-    image: wurstmeister/zookeeper:latest
+    image: debezium/zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
-    - "2181:2181"
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    volumes:
+      - ./data/zk/data:/zookeeper/data
+      - ./data/zk/datalog:/zookeeper/txns
+      - ./data/zk/conf:/zookeeper/conf
 
   kafka:
-    container_name: kafka
-    image: wurstmeister/kafka:latest
+    image: debezium/kafka
     environment:
       ## the >- used below infers a value which is a string and properly 
       ## ignore the multiple lines resulting in one long string: 
@@ -60,8 +64,28 @@ services:
         kafka.controller=INFO,
         kafka.producer.async.DefaultEventHandler=INFO,
         state.change.logger=INFO
-      KAFKA_CREATE_TOPICS: "test-topic:1:1"
+      CREATE_TOPICS: "jobs.public.OutboxItems:1:1"
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      BROKED_ID: 1
     ports:
-    - 9092:9092
+      - 9092:9092
+    volumes:
+      - ./data/kafka:/kafka/data/1
+    links:
+      - zookeeper
     depends_on:
-    - zookeeper
+      - zookeeper
+
+  connect:
+    image: debezium/connect
+    ports:
+      - 8083:8083
+    links:
+      - kafka
+      - db
+    environment:
+      BOOTSTRAP_SERVERS: "kafka:9092"
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses

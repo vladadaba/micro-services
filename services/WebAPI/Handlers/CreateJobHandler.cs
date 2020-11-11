@@ -1,29 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
+using WebAPI.Commands;
 using WebAPI.Models;
 
-namespace WebAPI.Services
+namespace WebAPI.Handlers
 {
-    public class JobService
+    public class CreateJobHandler : IRequestHandler<CreateJobCommand>
     {
         private readonly JobContext _jobContext;
 
-        public JobService(JobContext jobContext)
+        public CreateJobHandler(JobContext jobContext)
         {
             _jobContext = jobContext;
         }
 
-        public async Task CreateJob(JobItem newJob)
+        public async Task<Unit> Handle(CreateJobCommand request, CancellationToken cancellationToken)
         {
+            var newJob = JobItem.From(request);
+            var newOutboxItem = OutboxItem.From(newJob);
             await using var transaction = await _jobContext.Database.BeginTransactionAsync();
             try
             {
                 _jobContext.JobItems.Add(newJob);
-                _jobContext.OutboxItems.Add(OutboxItem.FromJob(newJob));
-                
+                _jobContext.OutboxItems.Add(newOutboxItem);
+
                 await _jobContext.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
@@ -31,16 +35,8 @@ namespace WebAPI.Services
             {
                 Console.WriteLine(ex.Message + " " + ex.StackTrace);
             }
-        }
 
-        public Task<List<JobItem>> GetAll()
-        {
-            return _jobContext.JobItems.ToListAsync();
-        }
-
-        public ValueTask<JobItem> Get(Guid id)
-        {
-            return _jobContext.JobItems.FindAsync(id);
+            return Unit.Value;
         }
     }
 }

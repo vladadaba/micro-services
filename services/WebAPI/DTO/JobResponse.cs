@@ -18,10 +18,10 @@ namespace WebAPI.DTO
         public Guid Id { get; set; }
         
         [JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         [JsonProperty(PropertyName = "status")]
-        public string Status { get; set; }
+        public string Status { get; set; } = "";
 
         public static JobResponse From(JobItem item)
         {

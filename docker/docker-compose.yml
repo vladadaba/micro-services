@@ -29,7 +29,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: Jobs
+      POSTGRES_DB: jobs
     volumes:
       - ./data/db:/var/lib/postgresql/data
 
@@ -68,7 +68,7 @@ services:
         kafka.controller=INFO,
         kafka.producer.async.DefaultEventHandler=INFO,
         state.change.logger=INFO
-      CREATE_TOPICS: "jobs.public.OutboxItems:1:1"
+      CREATE_TOPICS: "jobs.public.outbox_items:1:1"
       ZOOKEEPER_CONNECT: "zookeeper:2181"
       BROKED_ID: 1
     ports:

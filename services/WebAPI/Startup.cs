@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using Dapper.Contrib.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -45,8 +47,10 @@ namespace WebAPI
             });
 
             services.AddMediatR(typeof(Startup));
-            services.AddDbContext<JobContext>(x => x.UseNpgsql(Configuration["Database:ConnectionString"]));
+            services.AddDbContext<JobContext>(x => x.UseNpgsql(Configuration["Database:ConnectionString"]).UseSnakeCaseNamingConvention()); // lowercasenaming in order to make dapper work with EF Core created tables and columns
             services.AddSingleton<ConnectionFactory>();
+
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

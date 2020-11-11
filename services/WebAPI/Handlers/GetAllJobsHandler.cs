@@ -9,6 +9,7 @@ using WebAPI.Database;
 using WebAPI.DTO;
 using WebAPI.Models;
 using WebAPI.Queries;
+using static WebAPI.Models.JobItem;
 
 namespace WebAPI.Handlers
 {
@@ -16,7 +17,7 @@ namespace WebAPI.Handlers
     {
         private readonly ConnectionFactory _factory;
 
-        private const string QUERY_TEMPLATE = @"SELECT /**select**/ FROM Sale /**where**/ /**orderby**/";
+        private static readonly string QUERY_TEMPLATE = $"SELECT /**select**/ FROM {JobItemSchema.Table} /**where**/ /**orderby**/";
 
         public GetAllJobsHandler(ConnectionFactory factory)
         {
@@ -30,10 +31,10 @@ namespace WebAPI.Handlers
             var template = sqlBuilder.AddTemplate(QUERY_TEMPLATE);
 
             sqlBuilder.Select("*");
-            sqlBuilder.OrderBy($"{nameof(JobItem.CreatedAt)} DESC");
+            sqlBuilder.OrderBy($"{JobItemSchema.Columns.CreatedAt} DESC");
             if (!string.IsNullOrEmpty(filter.Name))
             {
-                sqlBuilder.Where($"{nameof(JobItem.Name)} ILIKE @Name", new { Name = $"{EscapeForLike(filter.Name)}%" });
+                sqlBuilder.Where($"{nameof(JobItemSchema.Columns.Name)} ILIKE @Name", new { Name = $"{EscapeForLike(filter.Name)}%" });
             }
 
             using var conn = _factory.GetConnection();

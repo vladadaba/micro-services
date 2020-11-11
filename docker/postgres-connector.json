@@ -6,8 +6,8 @@
     "database.port": "5432",
     "database.user": "postgres",
     "database.password": "password",
-    "database.dbname" : "Jobs",
+    "database.dbname" : "jobs",
     "database.server.name": "jobs",
-    "table.include.list": "public.OutboxItems"
+    "table.include.list": "public.outbox_items"
   }
 }

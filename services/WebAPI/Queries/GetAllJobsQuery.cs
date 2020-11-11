@@ -9,5 +9,11 @@ namespace WebAPI.Queries
 {
     public class GetAllJobsQuery : IRequest<IEnumerable<JobResponse>>
     {
+        public GetAllJobsQuery(JobFilter filter)
+        {
+            Filter = filter;
+        }
+
+        public JobFilter Filter { get; }
     }
 }

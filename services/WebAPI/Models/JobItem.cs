@@ -11,16 +11,7 @@ namespace WebAPI.Models
         public Guid Id { get; set; }
         public string Name { get; set; } = "";
         public JobStatus Status { get; set; }
-
-        public static JobItem NewJob(string name)
-        {
-            return new JobItem
-            {
-                Id = Guid.NewGuid(),
-                Name = name,
-                Status = JobStatus.Pending
-            };
-        }
+        public DateTime CreatedAt { get; set; }
 
         public static JobItem From(CreateJobCommand command)
         {
@@ -28,7 +19,8 @@ namespace WebAPI.Models
             {
                 Id = command.Id,
                 Name = command.Name,
-                Status = command.Status
+                Status = command.Status,
+                CreatedAt = command.CreatedAt
             };
         }
     }

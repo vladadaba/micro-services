@@ -45,9 +45,9 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IEnumerable<JobResponse>> GetAll()
+        public async Task<IEnumerable<JobResponse>> GetAll([FromQuery] JobFilter filter)
         {
-            var query = new GetAllJobsQuery();
+            var query = new GetAllJobsQuery(filter);
             
             return await _mediator.Send(query);
         }
@@ -63,7 +63,7 @@ namespace WebAPI.Controllers
                 return BadRequest();
             }
 
-            var command = new CreateJobCommand(req.Name);
+            var command = new CreateJobCommand(req);
             await _mediator.Send(command);
 
             return Created(nameof(Get), new { id = command.Id });

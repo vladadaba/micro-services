@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using Polly;
+using WebAPI.Database;
 using WebAPI.Models;
 
 namespace WebAPI
@@ -43,6 +44,7 @@ namespace WebAPI
 
             services.AddMediatR(typeof(Startup));
             services.AddDbContext<JobContext>(x => x.UseNpgsql("Server=db;Port=5432;Database=Jobs;Username=postgres;Password=password;"));
+            services.AddSingleton<ConnectionFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

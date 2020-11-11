@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+using WebAPI.Database;
 using WebAPI.DTO;
 using WebAPI.Models;
 using WebAPI.Queries;
@@ -13,18 +14,37 @@ namespace WebAPI.Handlers
 {
     public class GetAllJobsHandler : IRequestHandler<GetAllJobsQuery, IEnumerable<JobResponse>>
     {
-        private readonly JobContext _jobContext;
+        private readonly ConnectionFactory _factory;
 
-        public GetAllJobsHandler(JobContext jobContext)
+        private const string QUERY_TEMPLATE = @"SELECT /**select**/ FROM Sale /**where**/ /**orderby**/";
+
+        public GetAllJobsHandler(ConnectionFactory factory)
         {
-            _jobContext = jobContext;
+            _factory = factory;
         }
 
         public async Task<IEnumerable<JobResponse>> Handle(GetAllJobsQuery request, CancellationToken cancellationToken)
         {
-            var jobs = await _jobContext.JobItems.ToListAsync();
+            var filter = request.Filter;
+            var sqlBuilder = new SqlBuilder();
+            var template = sqlBuilder.AddTemplate(QUERY_TEMPLATE);
+
+            sqlBuilder.Select("*");
+            sqlBuilder.OrderBy($"{nameof(JobItem.CreatedAt)} DESC");
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                sqlBuilder.Where($"{nameof(JobItem.Name)} ILIKE @Name", new { Name = $"{EscapeForLike(filter.Name)}%" });
+            }
+
+            using var conn = _factory.GetConnection();
+            var jobs = await conn.QueryAsync<JobItem>(template.RawSql, template.Parameters);
 
             return jobs.Select(job => JobResponse.From(job));
+        }
+
+        public static string EscapeForLike(string value)
+        {
+            return value.Replace("_", @"\\_").Replace("[", @"\\[").Replace("%", @"\\%");
         }
     }
 }

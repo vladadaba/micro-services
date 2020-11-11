@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper.Contrib.Extensions;
 using MediatR;
+using WebAPI.Database;
 using WebAPI.DTO;
 using WebAPI.Models;
 using WebAPI.Queries;
@@ -12,22 +14,19 @@ namespace WebAPI.Handlers
 {
     public class GetJobByIdHandler : IRequestHandler<GetJobByIdQuery, JobResponse?>
     {
-        private readonly JobContext _jobContext;
+        private readonly ConnectionFactory _factory;
 
-        public GetJobByIdHandler(JobContext jobContext)
+        public GetJobByIdHandler(ConnectionFactory factory)
         {
-            _jobContext = jobContext;
+            _factory = factory;
         }
 
         public async Task<JobResponse?> Handle(GetJobByIdQuery request, CancellationToken cancellationToken)
         {
-            var job = await _jobContext.JobItems.FindAsync(request.Id);
-            if (job == null)
-            {
-                return null;
-            }
-
-            return JobResponse.From(job);
+            using var conn = _factory.GetConnection();
+            var job = await conn.GetAsync<JobItem>(request.Id);
+            
+            return job != null ? JobResponse.From(job) : null;
         }
     }
 }

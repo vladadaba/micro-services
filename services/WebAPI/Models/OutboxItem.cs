@@ -10,6 +10,7 @@ namespace WebAPI.Models
         public Guid Id { get; set; }
         public string Name { get; set; } = "";
         public JobStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public static OutboxItem From(JobItem job)
         {
@@ -17,7 +18,8 @@ namespace WebAPI.Models
             {
                 Id = job.Id,
                 Name = job.Name,
-                Status = job.Status
+                Status = job.Status,
+                CreatedAt = job.CreatedAt
             };
         }
     }

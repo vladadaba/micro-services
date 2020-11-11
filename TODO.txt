@@ -1,0 +1,8 @@
+- add MediatR
+    https://github.com/jbogard/MediatR/wiki
+- split commands and queries
+    https://itnext.io/why-and-how-i-implemented-cqrs-and-mediator-patterns-in-a-microservice-b07034592b6d
+- add Dapper
+    https://github.com/StackExchange/Dapper
+    https://dotnetcoretutorials.com/2020/07/11/dapper-with-mysql-postgresql-on-net-core/
+- use IOptions for connection string

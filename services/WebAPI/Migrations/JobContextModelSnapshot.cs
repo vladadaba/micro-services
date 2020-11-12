@@ -23,34 +23,52 @@ namespace WebAPI.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
                         .HasColumnType("text");
 
                     b.Property<int>("Status")
+                        .HasColumnName("status")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_job_items");
 
-                    b.ToTable("JobItems");
+                    b.ToTable("job_items");
                 });
 
             modelBuilder.Entity("WebAPI.Models.OutboxItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
                         .HasColumnType("text");
 
                     b.Property<int>("Status")
+                        .HasColumnName("status")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_outbox_items");
 
-                    b.ToTable("OutboxItems");
+                    b.ToTable("outbox_items");
                 });
 #pragma warning restore 612, 618
         }

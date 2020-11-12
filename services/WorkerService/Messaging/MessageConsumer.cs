@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using WorkerService.Options;
 
 namespace WorkerService.Messaging
 {
@@ -12,13 +14,15 @@ namespace WorkerService.Messaging
     {
         private readonly IConsumer<Ignore, string> consumer;
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly IOptions<KafkaOptions> _options;
 
-        public MessageConsumer()
+        public MessageConsumer(IOptions<KafkaOptions> options)
         {
+            _options = options;
             var conf = new ConsumerConfig
             {
                 GroupId = "test-consumer-group",
-                BootstrapServers = "kafka:9092",
+                BootstrapServers = _options.Value.BootstrapServers,
                 // Note: The AutoOffsetReset property determines the start offset in the event
                 // there are not yet any committed offsets for the consumer group for the
                 // topic/partitions of interest. By default, offsets are committed
@@ -32,7 +36,7 @@ namespace WorkerService.Messaging
 
         private void Subscribe()
         {
-            consumer.Subscribe("jobs.public.OutboxItems");
+            consumer.Subscribe(_options.Value.JobRequestsTopic);
         }
 
         private void StartConsuming(CancellationToken token)

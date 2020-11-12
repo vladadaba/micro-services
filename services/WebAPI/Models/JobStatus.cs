@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebAPI
+namespace WebAPI.Models
 {
     public enum JobStatus
     {
         Pending,
         Running,
-        Failed,
-        Completed
+        Completed,
+        Failed
     }
 }

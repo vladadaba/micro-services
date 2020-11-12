@@ -2,20 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using Dapper.Contrib.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using Polly;
+using WebAPI.Database;
 using WebAPI.Models;
-using WebAPI.Services;
+using WebAPI.Options;
 
 namespace WebAPI
 {
@@ -31,6 +32,7 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<DatabaseOptions>(Configuration.GetSection("Database"));
             services.AddControllers();
             
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -44,8 +46,11 @@ namespace WebAPI
                 });
             });
 
-            services.AddDbContext<JobContext>(x => x.UseNpgsql("Server=db;Port=5432;Database=Jobs;Username=postgres;Password=password;"));
-            services.AddScoped<JobService>();
+            services.AddMediatR(typeof(Startup));
+            services.AddDbContext<JobContext>(x => x.UseNpgsql(Configuration["Database:ConnectionString"]).UseSnakeCaseNamingConvention()); // lowercasenaming in order to make dapper work with EF Core created tables and columns
+            services.AddSingleton<ConnectionFactory>();
+
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

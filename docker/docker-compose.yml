@@ -4,6 +4,8 @@ services:
     build:
       context: ../services/WebAPI
       dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
     ports:
       - "5001:80"
     depends_on:
@@ -13,6 +15,8 @@ services:
     build:
       context: ../services/WorkerService
       dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
     ports:
       - "5002:80"
     depends_on:
@@ -25,7 +29,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: Jobs
+      POSTGRES_DB: jobs
     volumes:
       - ./data/db:/var/lib/postgresql/data
 
@@ -64,7 +68,7 @@ services:
         kafka.controller=INFO,
         kafka.producer.async.DefaultEventHandler=INFO,
         state.change.logger=INFO
-      CREATE_TOPICS: "jobs.public.OutboxItems:1:1"
+      CREATE_TOPICS: "jobs.public.outbox_items:1:1"
       ZOOKEEPER_CONNECT: "zookeeper:2181"
       BROKED_ID: 1
     ports:

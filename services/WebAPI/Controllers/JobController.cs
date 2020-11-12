@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WebAPI.Commands;
 using WebAPI.DTO;
-using WebAPI.Models;
-using WebAPI.Services;
+using WebAPI.Queries;
 
 namespace WebAPI.Controllers
 {
@@ -17,12 +18,12 @@ namespace WebAPI.Controllers
     [Consumes("application/json")]
     public class JobController : ControllerBase
     {
-        private readonly JobService _jobService;
+        private readonly IMediator _mediator;
         private readonly ILogger<JobController> _logger;
 
-        public JobController(JobService jobService, ILogger<JobController> logger)
+        public JobController(IMediator mediator, ILogger<JobController> logger)
         {
-            _jobService = jobService;
+            _mediator = mediator;
             _logger = logger;
         }
         
@@ -32,22 +33,23 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<JobResponse>> Get(Guid id)
         {
-            var job = await _jobService.Get(id);
-            if (job == null)
+            var query = new GetJobByIdQuery(id);
+            var response = await _mediator.Send(query);
+            if (response == null)
             {
                 return NotFound();
             }
 
-            return JobResponse.From(job);
+            return response;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IEnumerable<JobResponse>> GetAll()
+        public async Task<IEnumerable<JobResponse>> GetAll([FromQuery] JobFilter filter)
         {
-            var jobs = await _jobService.GetAll();
-
-            return jobs.Select(j => JobResponse.From(j));
+            var query = new GetAllJobsQuery(filter);
+            
+            return await _mediator.Send(query);
         }
 
         [HttpPost]
@@ -61,11 +63,10 @@ namespace WebAPI.Controllers
                 return BadRequest();
             }
 
-            var newJob = JobItem.NewJob(req.Name);
+            var command = new CreateJobCommand(req);
+            await _mediator.Send(command);
 
-            await _jobService.CreateJob(newJob);
-
-            return CreatedAtAction(nameof(Get), new { id = newJob.Id }, JobResponse.From(newJob));
+            return Created(nameof(Get), new { id = command.Id });
         }
     }
 }

@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +20,7 @@ using Polly;
 using WebAPI.Database;
 using WebAPI.Models;
 using WebAPI.Options;
+using WebAPI.Utils;
 
 namespace WebAPI
 {
@@ -33,8 +37,19 @@ namespace WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<DatabaseOptions>(Configuration.GetSection("Database"));
-            services.AddControllers();
-            
+            services
+                .AddControllers(options =>
+                {
+                    options.Filters.Add(typeof(ValidateModelStateAttribute));
+                })
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+
+            services.AddTransient<IValidatorInterceptor, ValidatorInterceptor>();
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {

@@ -57,12 +57,6 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromBody] JobRequest req)
         {
-            // TODO: FluentValidation
-            if (string.IsNullOrWhiteSpace(req.Name))
-            {
-                return BadRequest();
-            }
-
             var command = new CreateJobCommand(req);
             await _mediator.Send(command);
 

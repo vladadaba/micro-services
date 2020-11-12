@@ -4,10 +4,17 @@ services:
     build:
       context: ../services/WebAPI
       dockerfile: Dockerfile
-    environment:
-      ASPNETCORE_ENVIRONMENT: Docker
     ports:
-      - "5001:80"
+      - "5101:80"
+      - "5001:443"
+    environment:
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_HTTPS_PORT: 5001
+      ASPNETCORE_ENVIRONMENT: Development
+      Database__ConnectionString: "Server=db;Port=5432;Database=jobs;Username=postgres;Password=password;"
+    volumes:
+      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
+      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https
     depends_on:
       - db
 
@@ -15,10 +22,17 @@ services:
     build:
       context: ../services/WorkerService
       dockerfile: Dockerfile
-    environment:
-      ASPNETCORE_ENVIRONMENT: Docker
     ports:
-      - "5002:80"
+      - "5102:80"
+      - "5002:443"
+    environment:
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_HTTPS_PORT: 5002
+      ASPNETCORE_ENVIRONMENT: Development
+      Kafka__BootstrapServers: "kafka:9092"
+    volumes:
+      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
+      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https
     depends_on:
       - kafka
 

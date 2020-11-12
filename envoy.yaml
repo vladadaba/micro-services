@@ -28,29 +28,24 @@ static_resources:
                 domains: ["*"]
                 routes:
                 - match:
-                    prefix: "/"
+                    prefix: "/webapi"
                   route:
-                    host_rewrite_literal: www.envoyproxy.io
-                    cluster: service_envoyproxy_io
+                    prefix_rewrite: /api
+                    cluster: webapi_service
   
     clusters:
-    - name: service_envoyproxy_io
+    - name: webapi_service
       connect_timeout: 30s
       type: LOGICAL_DNS
       # Comment out the following line to test on v6 networks
       dns_lookup_family: V4_ONLY
       load_assignment:
-        cluster_name: service_envoyproxy_io
+        cluster_name: webapi_service
         endpoints:
         - lb_endpoints:
           - endpoint:
               address:
                 socket_address:
-                  address: www.envoyproxy.io
-                  port_value: 443
-      transport_socket:
-        name: envoy.transport_sockets.tls
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-          sni: www.envoyproxy.io
+                  address: web
+                  port_value: 80
   

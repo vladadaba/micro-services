@@ -15,6 +15,8 @@ Some things that I want to test out are:
 * Ocelot API gateway
 * Redis
 * ELK logging and correlation ID
+* React frontend
+* i18n
 
 Maybe later on:
 * Chaos engineering

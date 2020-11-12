@@ -1,0 +1,6 @@
+- setup https with Docker
+    https://medium.com/@the.green.man/set-up-https-on-local-with-net-core-and-docker-7a41f030fc76
+- add Envoy proxy
+    https://github.com/envoyproxy/envoy
+    https://www.envoyproxy.io/docs/envoy/latest/start/start
+    https://blog.turbinelabs.io/setting-up-ssl-with-envoy-f7c5aa06a5ce

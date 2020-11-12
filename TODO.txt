@@ -1,0 +1,4 @@
+- add fluent validation and validate request
+    https://docs.fluentvalidation.net/en/latest/aspnet.html
+    https://github.com/FluentValidation/FluentValidation
+- 

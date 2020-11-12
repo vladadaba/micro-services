@@ -66,7 +66,7 @@ namespace WebAPI.Controllers
             var command = new CreateJobCommand(req);
             await _mediator.Send(command);
 
-            return Created(nameof(Get), new { id = command.Id });
+            return CreatedAtAction(nameof(Get), new { id = command.Id }, null);
         }
     }
 }

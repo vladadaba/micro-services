@@ -32,7 +32,39 @@ static_resources:
                   route:
                     prefix_rewrite: /api
                     cluster: webapi_service
-  
+
+    - name: listener_1
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 10001
+      filter_chains:
+      - filters:
+        - name: envoy.filters.network.http_connection_manager
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+            stat_prefix: ingress_http
+            http_filters:
+            - name: envoy.filters.http.router
+            route_config:
+              name: local_route
+              virtual_hosts:
+              - name: local_service
+                domains: ["*"]
+                routes:
+                - match:
+                    prefix: "/webapi"
+                  route:
+                    prefix_rewrite: /api
+                    cluster: webapi_service
+        tls_context:
+          common_tls_context:
+            tls_certificates:
+              - certificate_chain:
+                  filename: "/etc/ssl/certs/https.crt"
+                private_key:
+                  filename: "/etc/ssl/certs/key.pem"
+
     clusters:
     - name: webapi_service
       connect_timeout: 30s

@@ -1,13 +1,30 @@
 version: "3.8"
 services:
+  gateway:
+    image: envoyproxy/envoy:v1.16-latest
+    ports:
+      - "9901:9901"
+      - "10000:10000"
+      - "10001:10001"
+    volumes:
+      - ../envoy/envoy.yaml:/etc/envoy/envoy.yaml
+      - ../envoy/certs/https.crt:/etc/ssl/certs/https.crt
+      - ../envoy/certs/key.pem:/etc/ssl/certs/key.pem
+
   web:
     build:
       context: ../services/WebAPI
       dockerfile: Dockerfile
-    environment:
-      ASPNETCORE_ENVIRONMENT: Docker
     ports:
       - "5001:80"
+    environment:
+      ASPNETCORE_URLS: "http://+"
+      ASPNETCORE_HTTPS_PORT: 5001
+      ASPNETCORE_ENVIRONMENT: Development
+      Database__ConnectionString: "Server=db;Port=5432;Database=jobs;Username=postgres;Password=password;"
+    volumes:
+      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
+      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https
     depends_on:
       - db
 
@@ -15,10 +32,16 @@ services:
     build:
       context: ../services/WorkerService
       dockerfile: Dockerfile
-    environment:
-      ASPNETCORE_ENVIRONMENT: Docker
     ports:
       - "5002:80"
+    environment:
+      ASPNETCORE_URLS: "http://+"
+      ASPNETCORE_HTTPS_PORT: 5002
+      ASPNETCORE_ENVIRONMENT: Development
+      Kafka__BootstrapServers: "kafka:9092"
+    volumes:
+      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
+      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https
     depends_on:
       - kafka
 

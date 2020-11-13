@@ -87,7 +87,7 @@ namespace WebAPI
                 c.RoutePrefix = string.Empty;
             });
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection(); // we will use TLS termination on the gateway
 
             app.UseRouting();
 

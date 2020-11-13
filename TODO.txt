@@ -1,0 +1,20 @@
+- add ELK to docker-compose
+    https://www.elastic.co/guide/en/elastic-stack-get-started/current/get-started-docker.html
+    https://www.elastic.co/guide/en/logstash/current/config-examples.html
+    https://www.c-sharpcorner.com/article/logging-with-elasticsearch-kibana-serilog-using-asp-net-core-docker/
+- use Serilog to send logs to Elasticsearch
+    https://medium.com/@marcodesanctis2/monitor-asp-net-core-in-elk-through-docker-and-azure-event-hubs-6e519249af61
+    https://medium.com/@letienthanh0212/building-logging-system-in-microservice-architecture-with-elk-stack-and-serilog-net-core-part-2-2643dbbf3c2c
+    https://www.c-sharpcorner.com/article/logging-with-elasticsearch-kibana-serilog-using-asp-net-core-docker/
+    https://github.com/serilog/serilog-settings-configuration
+- generate correlationId (in envoy?)
+    https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/observability/tracing
+    https://medium.com/@letienthanh0212/building-logging-system-in-microservice-architecture-with-elk-stack-and-serilog-net-core-part-2-2643dbbf3c2c
+- add correlationId to Kafka message header so we can trace messages across Kafka aswell
+    https://github.com/debezium/debezium-examples/tree/master/outbox
+    https://debezium.io/documentation/reference/1.3/configuration/outbox-event-router.html#outbox-event-router-configuration-options
+    
+- more reading
+    https://nblumhardt.com/2019/10/serilog-mvc-logging/
+    https://benfoster.io/blog/serilog-best-practices/#standard-log-properties
+    https://www.morling.dev/blog/single-message-transforms-swiss-army-knife-of-kafka-connect/

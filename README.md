@@ -7,7 +7,7 @@
   * Dapper (for queries)
 - [x] Code-first DB and migrations with EF Core
 - [x] Envoy proxy acting as API gateway
-- [ ] ELK logging and correlation ID
+- [ ] Centralized logging (ELK) with correlation ID
 - [ ] Saga pattern (Choreography variant)
 - [ ] Event sourcing
 - [ ] OAuth and Authorization
@@ -16,6 +16,7 @@
 - [ ] Cursor or Keyset pagination
 - [ ] Simple React frontend
 - [ ] WebSockets
+- [ ] Health checks that work with Kubernetes
 
 ### And some DevOps stuff:
 - [ ] Build pipeline in Jenkins

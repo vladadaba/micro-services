@@ -13,10 +13,9 @@ services:
       context: ../services/WebAPI
       dockerfile: Dockerfile
     ports:
-      - "5101:80"
-      - "5001:443"
+      - "5001:80"
     environment:
-      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_URLS: "http://+"
       ASPNETCORE_HTTPS_PORT: 5001
       ASPNETCORE_ENVIRONMENT: Development
       Database__ConnectionString: "Server=db;Port=5432;Database=jobs;Username=postgres;Password=password;"
@@ -31,10 +30,9 @@ services:
       context: ../services/WorkerService
       dockerfile: Dockerfile
     ports:
-      - "5102:80"
-      - "5002:443"
+      - "5002:80"
     environment:
-      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_URLS: "http://+"
       ASPNETCORE_HTTPS_PORT: 5002
       ASPNETCORE_ENVIRONMENT: Development
       Kafka__BootstrapServers: "kafka:9092"

@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
-    <UserSecretsId>WebAPI-c7e19025-fd71-420b-8796-361e68d374cb</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

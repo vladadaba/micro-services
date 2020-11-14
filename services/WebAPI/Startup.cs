@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
@@ -17,6 +18,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using Polly;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 using WebAPI.Database;
 using WebAPI.Models;
 using WebAPI.Options;
@@ -64,6 +67,15 @@ namespace WebAPI
             services.AddMediatR(typeof(Startup));
             services.AddDbContext<JobContext>(x => x.UseNpgsql(Configuration["Database:ConnectionString"]).UseSnakeCaseNamingConvention()); // lowercasenaming in order to make dapper work with EF Core created tables and columns
             services.AddSingleton<ConnectionFactory>();
+
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(Configuration["ElasticConfiguration:Uri"]))
+                {
+                    AutoRegisterTemplate = true,
+                    IndexFormat = $"{Assembly.GetExecutingAssembly()?.GetName()?.Name?.ToLower()}-{DateTime.UtcNow:yyyy-MM}"
+                })
+                .CreateLogger();
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }

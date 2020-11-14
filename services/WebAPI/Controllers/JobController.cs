@@ -33,6 +33,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<JobResponse>> Get(Guid id)
         {
+            _logger.LogInformation($"Get job with id = '{id}'");
             var query = new GetJobByIdQuery(id);
             var response = await _mediator.Send(query);
             if (response == null)
@@ -47,6 +48,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IEnumerable<JobResponse>> GetAll([FromQuery] JobFilter filter)
         {
+            _logger.LogInformation($"Get all jobs");
             var query = new GetAllJobsQuery(filter);
             
             return await _mediator.Send(query);
@@ -57,6 +59,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromBody] JobRequest req)
         {
+            _logger.LogInformation($"Post job with name = '{req.Name}'");
             var command = new CreateJobCommand(req);
             await _mediator.Send(command);
 

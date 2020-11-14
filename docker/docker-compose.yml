@@ -22,6 +22,7 @@ services:
       ASPNETCORE_HTTPS_PORT: 5001
       ASPNETCORE_ENVIRONMENT: Development
       Database__ConnectionString: "Server=db;Port=5432;Database=jobs;Username=postgres;Password=password;"
+      ElasticConfiguration__Uri: "http://elastic:9200"
     volumes:
       - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
       - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https

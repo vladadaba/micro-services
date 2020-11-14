@@ -19,6 +19,7 @@ using Microsoft.OpenApi.Models;
 using Npgsql;
 using Polly;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 using WebAPI.Database;
 using WebAPI.Models;
@@ -69,7 +70,9 @@ namespace WebAPI
             services.AddSingleton<ConnectionFactory>();
 
             Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning) // reduce aspnet core noise in logs (only log warning and errors from framework)
                 .Enrich.FromLogContext()
+                .WriteTo.Console()
                 .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(Configuration["ElasticConfiguration:Uri"]))
                 {
                     AutoRegisterTemplate = true,
@@ -102,6 +105,9 @@ namespace WebAPI
             //app.UseHttpsRedirection(); // we will use TLS termination on the gateway
 
             app.UseRouting();
+
+            app.UseMiddleware<CorrelationIdMiddleware>();
+            app.UseSerilogRequestLogging();
 
             app.UseAuthorization();
 

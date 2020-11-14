@@ -90,7 +90,7 @@ namespace WebAPI
 
             app.UseRouting();
 
-            app.UseMiddleware<CorrelationIdMiddleware>();
+            app.UseMiddleware<CorrelationMiddleware>();
             app.UseSerilogRequestLogging();
 
             app.UseAuthorization();

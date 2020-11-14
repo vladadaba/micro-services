@@ -47,7 +47,7 @@ services:
       - kafka
 
   db:
-    image: debezium/postgres
+    image: debezium/postgres:11-alpine
     ports:
       - "5432:5432"
     environment:
@@ -58,7 +58,7 @@ services:
       - ./data/db:/var/lib/postgresql/data
 
   zookeeper:
-    image: debezium/zookeeper
+    image: debezium/zookeeper:1.3
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
@@ -71,7 +71,7 @@ services:
       - ./data/zk/conf:/zookeeper/conf
 
   kafka:
-    image: debezium/kafka
+    image: debezium/kafka:1.3
     environment:
       ## the >- used below infers a value which is a string and properly 
       ## ignore the multiple lines resulting in one long string: 
@@ -92,7 +92,7 @@ services:
         kafka.controller=INFO,
         kafka.producer.async.DefaultEventHandler=INFO,
         state.change.logger=INFO
-      CREATE_TOPICS: "jobs.public.outbox_items:1:1"
+      CREATE_TOPICS: "outbox.event.job:1:1"
       ZOOKEEPER_CONNECT: "zookeeper:2181"
       BROKED_ID: 1
     ports:
@@ -105,7 +105,7 @@ services:
       - zookeeper
 
   connect:
-    image: debezium/connect
+    image: debezium/connect:1.3
     ports:
       - 8083:8083
     links:
@@ -117,7 +117,15 @@ services:
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
       STATUS_STORAGE_TOPIC: my_connect_statuses
-
+    volumes:
+      - ./connectors:/scripts
+    command: 
+      - bash 
+      - -c 
+      - |
+        /scripts/create-postgres-source.sh connect 8083 &
+        /docker-entrypoint.sh start
+    
   elastic:
     image: 'docker.elastic.co/elasticsearch/elasticsearch:7.9.3-amd64'
     volumes: 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
@@ -48,7 +49,10 @@ namespace WorkerService.Messaging
                     try
                     {
                         var cr = consumer.Consume(token);
+                        cr.Message.Headers.TryGetLastBytes("correlation_id", out var bytes);
+                        var correlationId = bytes == null ? "correlation_id_is_null" : Encoding.UTF8.GetString(bytes);
                         Console.WriteLine($"Consumed message '{cr.Message.Value}' at: '{cr.TopicPartitionOffset}'.");
+                        Console.WriteLine($"CorrelationId={correlationId}");
                     }
                     catch (ConsumeException e)
                     {

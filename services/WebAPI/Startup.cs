@@ -1,11 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Dapper;
-using Dapper.Contrib.Extensions;
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -19,8 +12,6 @@ using Microsoft.OpenApi.Models;
 using Npgsql;
 using Polly;
 using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.Elasticsearch;
 using WebAPI.Database;
 using WebAPI.Models;
 using WebAPI.Options;
@@ -70,14 +61,7 @@ namespace WebAPI
             services.AddSingleton<ConnectionFactory>();
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning) // reduce aspnet core noise in logs (only log warning and errors from framework)
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(Configuration["ElasticConfiguration:Uri"]))
-                {
-                    AutoRegisterTemplate = true,
-                    IndexFormat = $"{Assembly.GetExecutingAssembly()?.GetName()?.Name?.ToLower()}-{DateTime.UtcNow:yyyy-MM}"
-                })
+                .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;

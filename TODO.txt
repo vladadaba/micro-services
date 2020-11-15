@@ -1,0 +1,8 @@
+- add CreditService
+- add it to Envoy config
+- rename WebApi to JobService
+- extract stuff to shared library
+- add interfaces where needed
+- add src folder and change folder structure a bit
+- .editorconfig file
+    https://docs.microsoft.com/en-us/visualstudio/ide/create-portable-custom-editor-options?view=vs-2019

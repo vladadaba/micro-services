@@ -17,6 +17,7 @@
 - [ ] Simple React frontend
 - [ ] WebSockets
 - [ ] Health checks that work with Kubernetes
+- [ ] Feature toggling or api versioning
 
 ### And some DevOps stuff:
 - [ ] Build pipeline in Jenkins

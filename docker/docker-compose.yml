@@ -1,20 +1,20 @@
 version: "3.8"
 services:
   gateway:
-    image: envoyproxy/envoy:v1.16-latest
+    image: envoyproxy/envoy:${ENVOY_VERSION}
     ports:
       - "9901:9901"
       - "10000:10000"
       - "10001:10001"
     volumes:
-      - ../envoy/envoy.yaml:/etc/envoy/envoy.yaml
-      - ../envoy/certs/https.crt:/etc/ssl/certs/https.crt
-      - ../envoy/certs/key.pem:/etc/ssl/certs/key.pem
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+      - ./envoy/certs/https.crt:/etc/ssl/certs/https.crt
+      - ./envoy/certs/key.pem:/etc/ssl/certs/key.pem
 
-  web:
+  job_service:
     build:
-      context: ../services/WebAPI
-      dockerfile: Dockerfile
+      context: ../src/services
+      dockerfile: JobService/Dockerfile
     ports:
       - "5001:80"
     environment:
@@ -23,31 +23,40 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       Database__ConnectionString: "Server=db;Port=5432;Database=jobs;Username=postgres;Password=password;"
       Serilog__WriteTo__1__Args__nodeUris: "http://elastic:9200"
-    volumes:
-      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
-      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https
     depends_on:
       - db
 
-  worker:
+  credit_service:
     build:
-      context: ../services/WorkerService
-      dockerfile: Dockerfile
+      context: ../src/services
+      dockerfile: CreditService/Dockerfile
     ports:
       - "5002:80"
     environment:
       ASPNETCORE_URLS: "http://+"
       ASPNETCORE_HTTPS_PORT: 5002
       ASPNETCORE_ENVIRONMENT: Development
+      Database__ConnectionString: "Server=db;Port=5432;Database=credits;Username=postgres;Password=password;"
+      Serilog__WriteTo__1__Args__nodeUris: "http://elastic:9200"
+    depends_on:
+      - db
+
+  worker_service:
+    build:
+      context: ../src/services
+      dockerfile: WorkerService/Dockerfile
+    ports:
+      - "5003:80"
+    environment:
+      ASPNETCORE_URLS: "http://+"
+      ASPNETCORE_HTTPS_PORT: 5003
+      ASPNETCORE_ENVIRONMENT: Development
       Kafka__BootstrapServers: "kafka:9092"
-    volumes:
-      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
-      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https
     depends_on:
       - kafka
 
   db:
-    image: debezium/postgres:11-alpine
+    image: debezium/postgres:${DEBEZIUM_PG_VERSION}
     ports:
       - "5432:5432"
     environment:
@@ -58,7 +67,7 @@ services:
       - ./data/db:/var/lib/postgresql/data
 
   zookeeper:
-    image: debezium/zookeeper:1.3
+    image: debezium/zookeeper:${DEBEZIUM_KAFKA_VERSION}
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
@@ -71,7 +80,7 @@ services:
       - ./data/zk/conf:/zookeeper/conf
 
   kafka:
-    image: debezium/kafka:1.3
+    image: debezium/kafka:${DEBEZIUM_KAFKA_VERSION}
     environment:
       ## the >- used below infers a value which is a string and properly 
       ## ignore the multiple lines resulting in one long string: 
@@ -105,7 +114,7 @@ services:
       - zookeeper
 
   connect:
-    image: debezium/connect:1.3
+    image: debezium/connect:${DEBEZIUM_KAFKA_VERSION}
     ports:
       - 8083:8083
     links:
@@ -127,7 +136,7 @@ services:
         /docker-entrypoint.sh start
     
   elastic:
-    image: 'docker.elastic.co/elasticsearch/elasticsearch:7.9.3-amd64'
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}-amd64
     volumes: 
       - ./data/elastic:/usr/share/elasticsearch/data
     environment:
@@ -140,7 +149,7 @@ services:
       - 9300:9300
   
   kibana:
-    image: 'docker.elastic.co/kibana/kibana:7.9.3'
+    image: 'docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}'
     environment: 
       ELASTICSEARCH_HOSTS: http://elastic:9200
     ports:

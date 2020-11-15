@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace JobService.Controllers
 {
@@ -13,14 +14,20 @@ namespace JobService.Controllers
     [Consumes("application/json")]
     public class CreditController : ControllerBase
     {
-        public CreditController()
+        private readonly ILogger _logger;
+
+        public CreditController(ILogger logger)
         {
+            this._logger = logger;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<string> Get()
         {
+            _logger.LogInformation("Credit GET");
+            await Task.Delay(10);
+
             return "dummy";
         }
     }

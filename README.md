@@ -8,12 +8,13 @@
 - [x] Code-first DB and migrations with EF Core
 - [x] Envoy proxy acting as API gateway
 - [x] Centralized logging (ELK) with correlation ID
+- [x] Keyset pagination
+- [ ] Infinite scroll (frontend)
 - [ ] Saga pattern (Choreography variant)
 - [ ] Event sourcing
 - [ ] OAuth and Authorization
 - [ ] Caching (Redis or Memcached)
 - [ ] Schema registry and AVRO serialization
-- [ ] Cursor or Keyset pagination
 - [ ] Simple React frontend
 - [ ] WebSockets
 - [ ] Health checks that work with Kubernetes

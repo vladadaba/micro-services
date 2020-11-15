@@ -46,7 +46,7 @@ namespace JobService.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IEnumerable<JobResponse>> GetAll([FromQuery] JobFilter filter)
+        public async Task<ResponseItems<JobResponse>> GetAll([FromQuery] JobFilter filter)
         {
             _logger.Information($"Get all jobs");
             var query = new GetAllJobsQuery(filter);

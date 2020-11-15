@@ -1,0 +1,14 @@
+- set index on timestamp? what if 2 jobs have exact same timestamp and page breaks in between (we will skip a record)? maybe better to use new autoincrement column
+    https://coderwall.com/p/lkcaag/pagination-you-re-probably-doing-it-wrong
+    https://www.npgsql.org/efcore/modeling/indexes.html
+- implement keyset pagination on get all jobs api (naturally ordered by newly created autoincrement column descending)
+    https://www.citusdata.com/blog/2016/03/30/five-ways-to-paginate/
+	https://corstianboerman.com/2018-12-26/cursor-based-pagination-with-c-and-sql-server.html
+
+- insert many rows for testing
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; -- so we can use uuid_generate_v4() function
+
+INSERT INTO job_items (id, name, status, created_at)
+	select uuid_generate_v4(), name, 0, now()
+		from generate_series(1, 100000) as t(name);

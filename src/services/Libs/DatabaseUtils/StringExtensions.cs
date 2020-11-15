@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace JobService.Utils
+namespace DatabaseUtils
 {
     public static class StringExtensions
     {

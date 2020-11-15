@@ -5,11 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Npgsql;
-using JobService.Options;
 
-namespace JobService.Database
+namespace DatabaseUtils
 {
-    public class ConnectionFactory
+    internal class ConnectionFactory : IConnectionFactory
     {
         private readonly IOptions<DatabaseOptions> _options;
 

@@ -36,7 +36,7 @@ namespace CreditService
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            //app.UseHttpsRedirection(); // we will use TLS termination on the gateway
 
             app.UseRouting();
 

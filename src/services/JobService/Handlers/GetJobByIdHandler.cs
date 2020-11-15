@@ -5,18 +5,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 using MediatR;
-using JobService.Database;
 using JobService.DTO;
 using JobService.Models;
 using JobService.Queries;
+using DatabaseUtils;
 
 namespace JobService.Handlers
 {
     public class GetJobByIdHandler : IRequestHandler<GetJobByIdQuery, JobResponse?>
     {
-        private readonly ConnectionFactory _factory;
+        private readonly IConnectionFactory _factory;
 
-        public GetJobByIdHandler(ConnectionFactory factory)
+        public GetJobByIdHandler(IConnectionFactory factory)
         {
             _factory = factory;
         }

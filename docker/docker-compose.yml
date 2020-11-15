@@ -13,8 +13,8 @@ services:
 
   job_service:
     build:
-      context: ../src/services/JobService
-      dockerfile: Dockerfile
+      context: ../src/services
+      dockerfile: JobService/Dockerfile
     ports:
       - "5001:80"
     environment:
@@ -28,8 +28,8 @@ services:
 
   credit_service:
     build:
-      context: ../src/services/CreditService
-      dockerfile: Dockerfile
+      context: ../src/services
+      dockerfile: CreditService/Dockerfile
     ports:
       - "5002:80"
     environment:
@@ -43,8 +43,8 @@ services:
 
   worker_service:
     build:
-      context: ../src/services/WorkerService
-      dockerfile: Dockerfile
+      context: ../src/services
+      dockerfile: WorkerService/Dockerfile
     ports:
       - "5003:80"
     environment:

@@ -7,7 +7,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JobService.Utils
+namespace ValidationUtils
 {
     public class ValidatorInterceptor : IValidatorInterceptor
     {

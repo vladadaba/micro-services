@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using JobService.Utils;
+using LoggingUtils;
 
 namespace JobService.Models
 {
@@ -29,7 +27,7 @@ namespace JobService.Models
         [Column(TypeName = "jsonb")]
         public string? Payload { get; set; } = "";
 
-        public static OutboxItem From(JobItem job)
+        public static OutboxItem CreateNew(JobItem job)
         {
             return new OutboxItem
             {

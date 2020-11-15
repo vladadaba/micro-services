@@ -4,18 +4,16 @@ using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Npgsql;
-using Polly;
 using Serilog;
-using JobService.Database;
 using JobService.Models;
-using JobService.Options;
-using JobService.Utils;
+using JobService.Validators;
+using LoggingUtils;
+using ValidationUtils;
+using DatabaseUtils;
 
 namespace JobService
 {
@@ -31,14 +29,14 @@ namespace JobService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<DatabaseOptions>(Configuration.GetSection("Database"));
             services
                 .AddControllers(options =>
                 {
                     options.Filters.Add(typeof(ValidateModelStateAttribute));
                 })
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<JobRequestValidator>());
 
+            services.AddSerilogLogger(Configuration);
             services.AddTransient<IValidatorInterceptor, ValidatorInterceptor>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -57,18 +55,11 @@ namespace JobService
             });
 
             services.AddMediatR(typeof(Startup));
-            services.AddDbContext<JobContext>(x => x.UseNpgsql(Configuration["Database:ConnectionString"]).UseSnakeCaseNamingConvention()); // lowercasenaming in order to make dapper work with EF Core created tables and columns
-            services.AddSingleton<ConnectionFactory>();
-
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(Configuration)
-                .CreateLogger();
-
-            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+            services.AddDatabase<JobContext>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, JobContext dbContext)
         {
             if (env.IsDevelopment())
             {
@@ -82,7 +73,7 @@ namespace JobService
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "JobService API V1");
                 c.RoutePrefix = string.Empty;
             });
 
@@ -90,7 +81,7 @@ namespace JobService
 
             app.UseRouting();
 
-            app.UseMiddleware<CorrelationMiddleware>();
+            app.UseCorrelation();
             app.UseSerilogRequestLogging();
 
             app.UseAuthorization();
@@ -100,26 +91,7 @@ namespace JobService
                 endpoints.MapControllers();
             });
 
-            UpdateDatabase(app);
-        }
-
-        private static void UpdateDatabase(IApplicationBuilder app)
-        {
-            // workaround for postgres container not accepting connections on startup
-            // retry until it accepts connection
-            var retryPolicy = Policy
-                .Handle<NpgsqlException>()
-                .WaitAndRetry(12, retryAttempt => TimeSpan.FromSeconds(5));
-
-            using (var serviceScope = app.ApplicationServices
-                .GetRequiredService<IServiceScopeFactory>()
-                .CreateScope())
-            {
-                using (var context = serviceScope.ServiceProvider.GetService<JobContext>())
-                {
-                    retryPolicy.Execute(context.Database.Migrate);
-                }
-            }
+            dbContext.ApplyMigrations();
         }
     }
 }

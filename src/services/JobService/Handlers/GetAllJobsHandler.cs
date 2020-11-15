@@ -5,21 +5,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using MediatR;
-using JobService.Database;
 using JobService.DTO;
 using JobService.Models;
 using JobService.Queries;
-using static JobService.Models.JobItem;
+using DatabaseUtils;
 
 namespace JobService.Handlers
 {
     public class GetAllJobsHandler : IRequestHandler<GetAllJobsQuery, IEnumerable<JobResponse>>
     {
-        private readonly ConnectionFactory _factory;
+        private readonly IConnectionFactory _factory;
 
-        private static readonly string QUERY_TEMPLATE = $"SELECT /**select**/ FROM {JobItemSchema.Table} /**where**/ /**orderby**/";
+        private static readonly string QUERY_TEMPLATE = $"SELECT /**select**/ FROM {JobItem.Table} /**where**/ /**orderby**/";
 
-        public GetAllJobsHandler(ConnectionFactory factory)
+        public GetAllJobsHandler(IConnectionFactory factory)
         {
             _factory = factory;
         }
@@ -31,10 +30,10 @@ namespace JobService.Handlers
             var template = sqlBuilder.AddTemplate(QUERY_TEMPLATE);
 
             sqlBuilder.Select("*");
-            sqlBuilder.OrderBy($"{JobItemSchema.Columns.CreatedAt} DESC");
+            sqlBuilder.OrderBy($"{JobItem.Columns.CreatedAt} DESC");
             if (!string.IsNullOrEmpty(filter.Name))
             {
-                sqlBuilder.Where($"{nameof(JobItemSchema.Columns.Name)} ILIKE @Name", new { Name = $"{EscapeForLike(filter.Name)}%" });
+                sqlBuilder.Where($"{nameof(JobItem.Columns.Name)} ILIKE @Name", new { Name = $"{EscapeForLike(filter.Name)}%" });
             }
 
             using var conn = _factory.GetConnection();

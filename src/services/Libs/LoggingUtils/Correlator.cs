@@ -2,7 +2,7 @@
 using System.Threading;
 using Serilog.Context;
 
-namespace JobService.Utils
+namespace LoggingUtils
 {
     public static class Correlator
     {

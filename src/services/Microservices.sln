@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobService", "JobService\JobService.csproj", "{D4DFBD16-8AA3-4474-B431-99FCC0A42E4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobService", "JobService\JobService.csproj", "{D4DFBD16-8AA3-4474-B431-99FCC0A42E4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerService", "WorkerService\WorkerService.csproj", "{4175740C-245E-45A0-9EDB-11432EA358DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerService", "WorkerService\WorkerService.csproj", "{4175740C-245E-45A0-9EDB-11432EA358DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{105E7958-6F11-4C76-9F8B-EC90DF759073}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreditService", "CreditService\CreditService.csproj", "{A5A48048-3DDB-4DF8-8752-BC01DDCEEB14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,10 @@ Global
 		{4175740C-245E-45A0-9EDB-11432EA358DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4175740C-245E-45A0-9EDB-11432EA358DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4175740C-245E-45A0-9EDB-11432EA358DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5A48048-3DDB-4DF8-8752-BC01DDCEEB14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A48048-3DDB-4DF8-8752-BC01DDCEEB14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A48048-3DDB-4DF8-8752-BC01DDCEEB14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A48048-3DDB-4DF8-8752-BC01DDCEEB14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

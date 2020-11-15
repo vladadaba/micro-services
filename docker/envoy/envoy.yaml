@@ -63,6 +63,11 @@ static_resources:
                 route:
                   prefix_rewrite: /api
                   cluster: job_service
+              - match:
+                  prefix: "/credit"
+                route:
+                  prefix_rewrite: /api
+                  cluster: credit_service
 
   - name: listener_1
     address:
@@ -99,6 +104,11 @@ static_resources:
                 route:
                   prefix_rewrite: /api
                   cluster: job_service
+              - match:
+                  prefix: "/credit"
+                route:
+                  prefix_rewrite: /api
+                  cluster: credit_service
       tls_context:
         common_tls_context:
           tls_certificates:
@@ -109,10 +119,11 @@ static_resources:
 
   clusters:
   - name: job_service
-    connect_timeout: 30s
+    connect_timeout: 0.25s
     type: LOGICAL_DNS
     # Comment out the following line to test on v6 networks
     dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
     load_assignment:
       cluster_name: job_service
       endpoints:
@@ -121,6 +132,21 @@ static_resources:
             address:
               socket_address:
                 address: job_service
+                port_value: 80
+  - name: credit_service
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: credit_service
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: credit_service
                 port_value: 80
 
 layered_runtime:

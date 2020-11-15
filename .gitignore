@@ -37,4 +37,5 @@ msbuild.wrn
 .vs/
 
 docker/data/
-envoy/certs/
+docker/envoy/certs/
+!.gitkeep

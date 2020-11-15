@@ -15,6 +15,7 @@ namespace JobService.Models
         public string Name { get; set; } = "";
         public JobStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
+        public int SerialNumber { get; internal set; }
 
         public static JobItem From(CreateJobCommand command)
         {
@@ -35,6 +36,7 @@ namespace JobService.Models
             public static string Name { get; } = nameof(JobItem.Name).ToSnakeCase();
             public static string Status { get; } = nameof(JobItem.Status).ToSnakeCase();
             public static string CreatedAt { get; } = nameof(JobItem.CreatedAt).ToSnakeCase();
+            public static string SerialNumber { get; } = nameof(JobItem.SerialNumber).ToSnakeCase();
         }
     }
 }

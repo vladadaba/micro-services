@@ -7,7 +7,7 @@ using JobService.DTO;
 
 namespace JobService.Queries
 {
-    public class GetAllJobsQuery : IRequest<IEnumerable<JobResponse>>
+    public class GetAllJobsQuery : IRequest<ResponseItems<JobResponse>>
     {
         public GetAllJobsQuery(JobFilter filter)
         {

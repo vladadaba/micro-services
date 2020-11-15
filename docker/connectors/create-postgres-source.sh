@@ -12,11 +12,11 @@ done
 echo -e "\n--\n+> Creating Kafka Connect Postgres source"
 
 response_status=000
-while [[ $response_status != 201 && $response_status != 409 ]] ; do
+while [[ $response_status != 200 && $response_status != 201 ]] ; do
   response_status="$(curl -s -w %{http_code} -o /dev/null \
-      -X "POST" "${url}" \
+      -X "PUT" "${url}/job-source/config" \
       -H "Content-Type: application/json" \
       -d "@/scripts/postgres-connector.json")"
-  echo -e $(date) " Kafka Connect POST status: " $response_status " (waiting for 201 or 409)"
+  echo -e $(date) " Kafka Connect PUT status: " $response_status " (waiting for 200 or 201)"
   sleep 5
 done

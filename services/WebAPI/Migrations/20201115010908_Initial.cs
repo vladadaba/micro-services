@@ -26,9 +26,12 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(nullable: false),
-                    name = table.Column<string>(nullable: false),
-                    status = table.Column<int>(nullable: false),
-                    created_at = table.Column<DateTime>(nullable: false)
+                    aggregate_type = table.Column<string>(maxLength: 255, nullable: false),
+                    aggregate_id = table.Column<string>(maxLength: 255, nullable: false),
+                    type = table.Column<string>(maxLength: 255, nullable: false),
+                    timestamp = table.Column<DateTime>(nullable: false),
+                    correlation_id = table.Column<string>(nullable: false),
+                    payload = table.Column<string>(type: "jsonb", nullable: true)
                 },
                 constraints: table =>
                 {

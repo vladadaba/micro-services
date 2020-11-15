@@ -1,10 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Dapper.Contrib.Extensions;
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using Polly;
+using Serilog;
 using WebAPI.Database;
 using WebAPI.Models;
 using WebAPI.Options;
@@ -65,6 +60,10 @@ namespace WebAPI
             services.AddDbContext<JobContext>(x => x.UseNpgsql(Configuration["Database:ConnectionString"]).UseSnakeCaseNamingConvention()); // lowercasenaming in order to make dapper work with EF Core created tables and columns
             services.AddSingleton<ConnectionFactory>();
 
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
+
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
@@ -90,6 +89,9 @@ namespace WebAPI
             //app.UseHttpsRedirection(); // we will use TLS termination on the gateway
 
             app.UseRouting();
+
+            app.UseMiddleware<CorrelationMiddleware>();
+            app.UseSerilogRequestLogging();
 
             app.UseAuthorization();
 

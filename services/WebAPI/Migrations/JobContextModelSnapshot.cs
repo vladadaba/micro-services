@@ -52,18 +52,36 @@ namespace WebAPI.Migrations
                         .HasColumnName("id")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("AggregateId")
                         .IsRequired()
-                        .HasColumnName("name")
+                        .HasColumnName("aggregate_id")
+                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<string>("AggregateType")
+                        .IsRequired()
+                        .HasColumnName("aggregate_type")
+                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<string>("CorrelationId")
+                        .IsRequired()
+                        .HasColumnName("correlation_id")
                         .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnName("status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Payload")
+                        .HasColumnName("payload")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnName("timestamp")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnName("type")
+                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(255);
 
                     b.HasKey("Id")
                         .HasName("pk_outbox_items");
